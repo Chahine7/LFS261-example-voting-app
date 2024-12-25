@@ -1,39 +1,30 @@
-
 pipeline {
-    agent any
-    tools {
-        maven 'maven3.9.8'
+    agent {
+        docker {
+            image 'maven:3.9.8-sapmachine-21'
+            args '-v $HOME/.m2:/root/.m2'
+        }
     }
     stages {
         stage('Build') {
-            when {
-                changeset "**/worker/**"
-            }
             steps {
-                echo 'Compiling worker app..'
+                echo 'Building worker app'
                 dir('worker') {
                     sh 'mvn compile'
                 }
             }
         }
         stage('Test') {
-            when {
-                changeset "**/worker/**"
-            }
             steps {
-                echo 'Running Unit Tests on worker app..'
+                echo 'Running unit tests on worker app'
                 dir('worker') {
                     sh 'mvn clean test'
                 }
             }
         }
         stage('Package') {
-            when {
-                branch 'master'
-                changeset "**/worker/**"
-            }
             steps {
-                echo 'Packaging worker app..'
+                echo 'Packaging worker app into a JAR file'
                 dir('worker') {
                     sh 'mvn package -DskipTests'
                 }
@@ -43,19 +34,7 @@ pipeline {
     }
     post {
         always {
-            echo 'Building multibranch pipeline for worker is completed..'
-        }
-        failure {
-            slackSend(
-                channel: "lfs-cicd",
-                message: ":x: Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-            )
-        }
-        success {
-            slackSend(
-                channel: "lfs-cicd",
-                message: ":white_check_mark: Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-            )
+            echo 'The job is complete'
         }
     }
 }
