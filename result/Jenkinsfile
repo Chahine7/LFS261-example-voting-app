@@ -28,5 +28,19 @@ pipeline {
             }
         }
     }
+    post {
+        failure {
+            slackSend(
+                channel: "lfs-cicd",
+                message: ":x: Build Failed - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            )
+        }
+        success {
+            slackSend(
+                channel: "lfs-cicd",
+                message: ":white_check_mark: Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            )
+        }
+    }
 }
 
