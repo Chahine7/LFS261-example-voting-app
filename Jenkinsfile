@@ -2,9 +2,6 @@ pipeline {
     agent none
     stages {
         stage("build") {
-            when {
-                changeset "**/worker/**"
-            }
             agent {
                 docker {
                     image 'maven:3.9.8-sapmachine-21'
@@ -19,9 +16,6 @@ pipeline {
             }
         }
         stage("test") {
-            when {
-                changeset "**/worker/**"
-            }
             agent {
                 docker {
                     image 'maven:3.9.8-sapmachine-21'
@@ -38,7 +32,6 @@ pipeline {
         stage("package") {
             when {
                 branch 'master'
-                changeset "**/worker/**"
             }
             agent {
                 docker {
@@ -57,7 +50,6 @@ pipeline {
         stage("docker-package") {
             agent any
             when {
-                changeset "**/worker/**"
                 branch 'master'
             }
             steps {
