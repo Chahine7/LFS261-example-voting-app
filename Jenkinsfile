@@ -76,7 +76,7 @@ stage('deploy to dev') {
 agent any 
 when {
 
-branch'master'
+branch 'master'
 
 }
 steps {
