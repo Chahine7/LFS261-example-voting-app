@@ -27,12 +27,12 @@ pipeline {
                 echo 'Packaging worker app into a JAR file'
                 dir('worker') {
                     sh 'mvn package -DskipTests'
-                }
+               
                 archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
-    }
-stage('docker-package'){
+}
+stage('docker-package') {
 agent any
 steps {
 	echo 'Packaging worker app with docker'
@@ -42,6 +42,7 @@ def workerImage=docker.build("11098078/worker:v${env.BUILD_ID}", "./worker")
 workerImage.push()
 workerImage.push("latest")
 } 
+}
 }
 }
 }
