@@ -1,0 +1,42 @@
+pipeline {
+    agent none
+    stages {
+        stage("build") {
+            agent {
+                docker {
+                    image 'maven:3.9.8-sapmachine-21'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                echo 'Compiling worker app...'
+                dir('worker') {
+                    sh 'mvn compile'
+                }
+            }
+        }
+        stage("test") {
+            agent {
+                docker {
+                    image 'maven:3.9.8-sapmachine-21'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+            steps {
+                echo 'Running Unit Tests on worker app...'
+                dir('worker') {
+                    sh 'mvn clean test'
+                }
+            }
+        }
+stage('Vote Integration Tests') {
+    agent any
+    when {
+        allOf {
+            changeset "**/vote/**"
+            branch 'master'
+        }
+    }
+    steps {
+        echo 'Running Integration Tests on the Vote App...'
+        dir('vote') {
