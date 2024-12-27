@@ -76,17 +76,6 @@ pipeline {
                 build job: 'deployment', parameters: [string(name: 'DOCKERTAG', value: GIT_COMMIT)]
             }
         }
-        stage('deploy to dev') {
-            agent any 
-            when {
-                branch 'master'
-            }
-            steps {
-                echo 'Deploy instavote app with docker compose'
-                sh 'docker compose up -d'
-            }
-        }
-    }
     post {
         always {
             echo 'Building multibranch pipeline for worker is completed...'
