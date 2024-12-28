@@ -66,21 +66,20 @@ pipeline {
         }
         stage('Triggerdeployment') {
             agent any
-            environment {
-                def GIT_COMMIT = "${env.GIT_COMMIT}"
-            }
             steps {
-                echo "${GIT_COMMIT}"
-                echo "triggering deployment"
-                // Passing variables to job deployment run by vote-deploy repository Jenkinsfile
-                build job: 'deployment', parameters: [string(name: 'DOCKERTAG', value: GIT_COMMIT)]
+                script {
+                    def gitCommit = env.GIT_COMMIT
+                    echo "GIT_COMMIT: ${gitCommit}"
+                    echo "Triggering deployment..."
+                    build job: 'deployment', parameters: [string(name: 'DOCKERTAG', value: gitCommit)]
+                }
             }
         }
-}
-}
+    } // Closing 'stages' block
     post {
         always {
             echo 'Building multibranch pipeline for worker is completed...'
         }
-    }
-}
+    } // Closing 'post' block
+} // Closing 'pipeline' block
+
